@@ -96,6 +96,29 @@ void Port2_Output(uint8_t data){
 
 
 
+void turn_direction(int direction, int time){
+    if (direction==1){
+        Port2_Output(GREEN);
+        Motor_BackwardSimple(5000,20);
+        Port2_Output(RED);
+        Motor_StopSimple(25);    // Stop the motor on initial state
+        Port2_Output(YELLOW);
+        Motor_LeftSimple(5000,time);
+        Motor_StopSimple(25);
+    }
+    if (direction==2){
+        Port2_Output(GREEN);
+        Motor_BackwardSimple(5000,20);
+        Port2_Output(RED);
+        Motor_StopSimple(25);    // Stop the motor on initial state
+        Port2_Output(YELLOW);
+        Motor_RightSimple(5000,time);
+        Motor_StopSimple(25);
+    }
+}
+
+
+
 // Uses P4IV IRQ handler to solve critical section/race
 void PORT4_IRQHandler(void){
 
@@ -106,7 +129,6 @@ void PORT4_IRQHandler(void){
     // BLUE:    Turn right
     // YELLOW:  Turn left
     // GREEN:   Backward
-//    Port2_Output(0);   // turn off the coloured LED
 
       status = P4->IV;      // 2*(n+1) where n is highest priority
 
@@ -119,69 +141,33 @@ void PORT4_IRQHandler(void){
       if (mode==3){
           switch(status){
             case 0x02:
-                Port2_Output(GREEN);
-                Motor_BackwardSimple(5000,20);
-                Port2_Output(RED);
-                Motor_StopSimple(25);    // Stop the motor on initial state
-                Port2_Output(YELLOW);
-                Motor_LeftSimple(5000,10);
-                Motor_StopSimple(25);
+                turn_direction(1,10);
               break;
 
             case 0x06: // Bump switch 2
-                Port2_Output(GREEN);
-                Motor_BackwardSimple(5000,20);
-                Port2_Output(RED);
-                Motor_StopSimple(25);    // Stop the motor on initial state
-                Port2_Output(YELLOW);
-                Motor_LeftSimple(5000,15);
-                Motor_StopSimple(25);
+                turn_direction(1,15);
                 break;
 
             case 0x08: // Bump switch 3
-                Port2_Output(GREEN);
-                Motor_BackwardSimple(5000,20);
-                Port2_Output(RED);
-                Motor_StopSimple(25);    // Stop the motor on initial state
-                Port2_Output(YELLOW);
-                Motor_LeftSimple(5000,20);
-                Motor_StopSimple(25);
+                turn_direction(1,20);
                 break;
 
             case 0x0C: // Bump switch 4
-                Port2_Output(GREEN);
-                Motor_BackwardSimple(5000,20);
-                Port2_Output(RED);
-                Motor_StopSimple(25);    // Stop the motor on initial state
-                Port2_Output(BLUE);
-                Motor_RightSimple(5000,20);
-                Motor_StopSimple(25);
+                turn_direction(2,20);
               break;
 
             case 0x0E: // Bump switch 5
-                Port2_Output(GREEN);
-                Motor_BackwardSimple(5000,20);
-                Port2_Output(RED);
-                Motor_StopSimple(25);    // Stop the motor on initial state
-                Port2_Output(BLUE);
-                Motor_RightSimple(5000,15);
-                Motor_StopSimple(25);
+                turn_direction(2,15);
               break;
 
             case 0x10: // Bump switch 6
-                Port2_Output(GREEN);
-                Motor_BackwardSimple(5000,20);
-                Port2_Output(RED);
-                Motor_StopSimple(25);    // Stop the motor on initial state
-                Port2_Output(BLUE);
-                Motor_RightSimple(5000,10);
-                Motor_StopSimple(25);
+                turn_direction(2,10);
               break;
 
             case 0xED: // none of the switches are pressed
-
               break;
           }
+          Port2_Output(WHITE);
       }
 
       P4->IFG &= ~0xED; // clear flag
@@ -263,70 +249,34 @@ void auto_checkbumpswitch(uint8_t status){
 
 void free_checkbumpswitch(uint8_t status){
     switch(status){
-      //case 0x02: // Bump switch 1 (for interrupt vector)
-        case 0x6D: // Bump 1
-            Port2_Output(GREEN);
-            Motor_BackwardSimple(5000,20);
-            Port2_Output(RED);
-            Motor_StopSimple(25);    // Stop the motor on initial state
-            Port2_Output(YELLOW);
-            Motor_RightSimple(5000,10);
-            Motor_StopSimple(25);
+      case 0x02:
+          turn_direction(2,10);
         break;
-      //case 0x06: // Bump switch 2 (for interrupt vector)
-        case 0xAD: // Bump 2
-            Port2_Output(GREEN);
-            Motor_BackwardSimple(5000,20);
-            Port2_Output(RED);
-            Motor_StopSimple(25);    // Stop the motor on initial state
-            Port2_Output(YELLOW);
-            Motor_RightSimple(5000,15);
-            Motor_StopSimple(25);
-        break;
-      //case 0x08: // Bump switch 3 (for interrupt vector)
-        case 0xCD: // Bump 3
-            Port2_Output(GREEN);
-            Motor_BackwardSimple(5000,20);
-            Port2_Output(RED);
-            Motor_StopSimple(25);    // Stop the motor on initial state
-            Port2_Output(YELLOW);
-            Motor_RightSimple(5000,20);
-            Motor_StopSimple(25);
-        break;
-      //case 0x0C: // Bump switch 4 (for interrupt vector)
-        case 0xE5: // Bump 4
-            Port2_Output(GREEN);
-            Motor_BackwardSimple(5000,20);
-            Port2_Output(RED);
-            Motor_StopSimple(25);    // Stop the motor on initial state
-            Port2_Output(BLUE);
-            Motor_LeftSimple(5000,20);
-            Motor_StopSimple(25);
-        break;
-      //case 0x0E: // Bump switch 5 (for interrupt vector)
-        case 0xE9: // Bump 5
-            Port2_Output(GREEN);
-            Motor_BackwardSimple(5000,20);
-            Port2_Output(RED);
-            Motor_StopSimple(25);    // Stop the motor on initial state
-            Port2_Output(BLUE);
-            Motor_LeftSimple(5000,15);
-            Motor_StopSimple(25);
-        break;
-      //case 0x10: // Bump switch 6 (for interrupt vector)
-        case 0xEC: // Bump 6
-            Port2_Output(GREEN);
-            Motor_BackwardSimple(5000,20);
-            Port2_Output(RED);
-            Motor_StopSimple(25);    // Stop the motor on initial state
-            Port2_Output(BLUE);
-            Motor_LeftSimple(5000,10);
-            Motor_StopSimple(25);
-        break;
-      case 0xED: // neither switch pressed
 
+      case 0x06: // Bump switch 2
+          turn_direction(2,15);
+          break;
+
+      case 0x08: // Bump switch 3
+          turn_direction(2,20);
+          break;
+
+      case 0x0C: // Bump switch 4
+          turn_direction(1,20);
+        break;
+
+      case 0x0E: // Bump switch 5
+          turn_direction(1,15);
+        break;
+
+      case 0x10: // Bump switch 6
+          turn_direction(1,10);
+        break;
+
+      case 0xED: // none of the switches are pressed
         break;
     }
+    Port2_Output(WHITE);
 }
 
 
@@ -401,7 +351,7 @@ void free_polling(void){
 void auto_interrupt(void){
     Port2_Output(WHITE);
     while(1){
-        Motor_ForwardSimple(5000,50);
+        Motor_ForwardSimple(5000,50);       // Moving in predefined route.
         Motor_RightSimple(5000,30);
         Motor_ForwardSimple(5000,50);
         Motor_LeftSimple(5000,30);
@@ -411,9 +361,9 @@ void auto_interrupt(void){
 
 
 void free_interrupt(void){
+    Port2_Output(WHITE);
     while(1){
-        Port2_Output(WHITE);
-        Motor_ForwardSimple(5000,100);
+        Motor_ForwardSimple(5000,100);      // Moving in straight line.
     }
 }
 
@@ -428,7 +378,7 @@ void mode_selection(void){
     if SW1IN{
         Port2_Output(SKYBLUE);          // Sky Blue color indicates auto mode is selected
         SysTick_Wait10ms(1000);
-        while(!SW2IN && !SW1IN){        // Red LED blinking waiting for switches to be pressed
+        while(!SW2IN && !SW1IN){        // Red LED blinking waiting for switches to be pressed for the second time
             SysTick_Wait10ms(10);
             REDLED = !REDLED;
         }
@@ -444,7 +394,7 @@ void mode_selection(void){
     if SW2IN{
         Port2_Output(PINK);             // Pink color indicates free motion mode is selected
         SysTick_Wait10ms(1000);
-        while(!SW2IN && !SW1IN){        // Red LED blinking waiting for switches to be pressed
+        while(!SW2IN && !SW1IN){        // Red LED blinking waiting for switches to be pressed for the second time.
             SysTick_Wait10ms(10);
             REDLED = !REDLED;
         }
