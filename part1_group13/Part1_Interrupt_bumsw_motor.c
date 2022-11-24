@@ -60,6 +60,7 @@ policies, either expressed or implied, of the FreeBSD Project.
 
 
 int mode;
+int int_pol;
 uint8_t status;
 
 
@@ -123,61 +124,61 @@ void PORT4_IRQHandler(void){
             case 0x02:
                 Port2_Output(GREEN);
                 Motor_BackwardSimple(5000,20);
-                Port2_Output(0);
-                Motor_StopSimple(250);    // Stop the motor on initial state
+//                Port2_Output(0);
+                Motor_StopSimple(25);    // Stop the motor on initial state
                 Port2_Output(YELLOW);
                 Motor_LeftSimple(5000,10);
-                Motor_StopSimple(250);
+                Motor_StopSimple(25);
               break;
 
             case 0x06: // Bump switch 2
                 Port2_Output(GREEN);
                 Motor_BackwardSimple(5000,20);
-                Port2_Output(0);
-                Motor_StopSimple(250);    // Stop the motor on initial state
+//                Port2_Output(0);
+                Motor_StopSimple(25);    // Stop the motor on initial state
                 Port2_Output(YELLOW);
                 Motor_LeftSimple(5000,15);
-                Motor_StopSimple(250);
+                Motor_StopSimple(25);
                 break;
 
             case 0x08: // Bump switch 3
                 Port2_Output(GREEN);
                 Motor_BackwardSimple(5000,20);
-                Port2_Output(0);
-                Motor_StopSimple(250);    // Stop the motor on initial state
+//                Port2_Output(0);
+                Motor_StopSimple(25);    // Stop the motor on initial state
                 Port2_Output(YELLOW);
                 Motor_LeftSimple(5000,20);
-                Motor_StopSimple(250);
+                Motor_StopSimple(25);
                 break;
 
             case 0x0C: // Bump switch 4
                 Port2_Output(GREEN);
                 Motor_BackwardSimple(5000,20);
-                Port2_Output(0);
-                Motor_StopSimple(250);    // Stop the motor on initial state
+//                Port2_Output(0);
+                Motor_StopSimple(25);    // Stop the motor on initial state
                 Port2_Output(BLUE);
                 Motor_RightSimple(5000,20);
-                Motor_StopSimple(250);
+                Motor_StopSimple(25);
               break;
 
             case 0x0E: // Bump switch 5
                 Port2_Output(GREEN);
                 Motor_BackwardSimple(5000,20);
-                Port2_Output(0);
-                Motor_StopSimple(250);    // Stop the motor on initial state
+//                Port2_Output(0);
+                Motor_StopSimple(25);    // Stop the motor on initial state
                 Port2_Output(BLUE);
                 Motor_RightSimple(5000,15);
-                Motor_StopSimple(250);
+                Motor_StopSimple(25);
               break;
 
             case 0x10: // Bump switch 6
                 Port2_Output(GREEN);
                 Motor_BackwardSimple(5000,20);
-                Port2_Output(0);
-                Motor_StopSimple(250);    // Stop the motor on initial state
+//                Port2_Output(0);
+                Motor_StopSimple(25);    // Stop the motor on initial state
                 Port2_Output(BLUE);
                 Motor_RightSimple(5000,10);
-                Motor_StopSimple(250);
+                Motor_StopSimple(25);
               break;
 
             case 0xED: // none of the switches are pressed
@@ -269,61 +270,61 @@ void checkbumpswitch(uint8_t status)
             case 0x6D: // Bump 1
                 Port2_Output(GREEN);
                 Motor_BackwardSimple(5000,20);
-                Port2_Output(0);
-                Motor_StopSimple(250);    // Stop the motor on initial state
+//                Port2_Output(0);
+                Motor_StopSimple(25);    // Stop the motor on initial state
                 Port2_Output(YELLOW);
-                Motor_LeftSimple(5000,10);
-                Motor_StopSimple(250);
+                Motor_RightSimple(5000,10);
+                Motor_StopSimple(25);
             break;
           //case 0x06: // Bump switch 2 (for interrupt vector)
             case 0xAD: // Bump 2
                 Port2_Output(GREEN);
                 Motor_BackwardSimple(5000,20);
-                Port2_Output(0);
-                Motor_StopSimple(250);    // Stop the motor on initial state
+//                Port2_Output(0);
+                Motor_StopSimple(25);    // Stop the motor on initial state
                 Port2_Output(YELLOW);
-                Motor_LeftSimple(5000,15);
-                Motor_StopSimple(250);
+                Motor_RightSimple(5000,15);
+                Motor_StopSimple(25);
             break;
           //case 0x08: // Bump switch 3 (for interrupt vector)
             case 0xCD: // Bump 3
                 Port2_Output(GREEN);
                 Motor_BackwardSimple(5000,20);
-                Port2_Output(0);
-                Motor_StopSimple(250);    // Stop the motor on initial state
+//                Port2_Output(0);
+                Motor_StopSimple(25);    // Stop the motor on initial state
                 Port2_Output(YELLOW);
-                Motor_LeftSimple(5000,20);
-                Motor_StopSimple(250);
+                Motor_RightSimple(5000,20);
+                Motor_StopSimple(25);
             break;
           //case 0x0C: // Bump switch 4 (for interrupt vector)
             case 0xE5: // Bump 4
                 Port2_Output(GREEN);
                 Motor_BackwardSimple(5000,20);
-                Port2_Output(0);
-                Motor_StopSimple(250);    // Stop the motor on initial state
+//                Port2_Output(0);
+                Motor_StopSimple(25);    // Stop the motor on initial state
                 Port2_Output(BLUE);
-                Motor_RightSimple(5000,20);
-                Motor_StopSimple(250);
+                Motor_LeftSimple(5000,20);
+                Motor_StopSimple(25);
             break;
           //case 0x0E: // Bump switch 5 (for interrupt vector)
             case 0xE9: // Bump 5
                 Port2_Output(GREEN);
                 Motor_BackwardSimple(5000,20);
-                Port2_Output(0);
-                Motor_StopSimple(250);    // Stop the motor on initial state
+//                Port2_Output(0);
+                Motor_StopSimple(25);    // Stop the motor on initial state
                 Port2_Output(BLUE);
-                Motor_RightSimple(5000,15);
-                Motor_StopSimple(250);
+                Motor_LeftSimple(5000,15);
+                Motor_StopSimple(25);
             break;
           //case 0x10: // Bump switch 6 (for interrupt vector)
             case 0xEC: // Bump 6
                 Port2_Output(GREEN);
                 Motor_BackwardSimple(5000,20);
-                Port2_Output(0);
-                Motor_StopSimple(250);    // Stop the motor on initial state
+//                Port2_Output(0);
+                Motor_StopSimple(25);    // Stop the motor on initial state
                 Port2_Output(BLUE);
-                Motor_RightSimple(5000,10);
-                Motor_StopSimple(250);
+                Motor_LeftSimple(5000,10);
+                Motor_StopSimple(25);
             break;
           case 0xED: // neither switch pressed
 
@@ -375,11 +376,13 @@ void Switch_Init(void){
 void polling(void){
     if (mode==1){
         while(1){
-            Motor_ForwardSimple(5000,20);
+            Motor_ForwardSimple(5000,50);
             Motor_RightSimple(5000,30);
-            Motor_ForwardSimple(5000,20);
+            Motor_ForwardSimple(5000,50);
             Motor_LeftSimple(5000,30);
+
             status = Bump_Read_Input();
+
             if (status == 0x6D || status == 0xAD || status == 0xCD || status == 0xE5 || status == 0xE9 || status == 0xEC) {
                 checkbumpswitch(status);
             }
@@ -389,7 +392,7 @@ void polling(void){
     if (mode==2){
         while(1){
             Port2_Output(WHITE);
-            Motor_ForwardSimple(5000,1);
+            Motor_ForwardSimple(5000,100);
             status = Bump_Read_Input();
             if (status == 0x6D || status == 0xAD || status == 0xCD || status == 0xE5 || status == 0xE9 || status == 0xEC) {
                 checkbumpswitch(status);
@@ -402,7 +405,7 @@ void polling(void){
 
 void change_mode(void){
     Port2_Output(SKYBLUE);
-    Motor_StopSimple(1000);
+    Motor_StopSimple(100);
     DisableInterrupts();
     Port2_Output(WHITE);
     P2->DIR |= 0xC0;
@@ -415,9 +418,9 @@ void change_mode(void){
 void interrupts(void){
     if (mode==1){
         while(1){
-            Motor_ForwardSimple(5000,20);
+            Motor_ForwardSimple(5000,50);
             Motor_RightSimple(5000,30);
-            Motor_ForwardSimple(5000,20);
+            Motor_ForwardSimple(5000,50);
             Motor_LeftSimple(5000,30);
             if SW2IN{
                 change_mode();
@@ -428,7 +431,7 @@ void interrupts(void){
     if (mode==2){
         while(1){
             Port2_Output(WHITE);
-            Motor_ForwardSimple(5000,1);
+            Motor_ForwardSimple(5000,100);
             if SW1IN{
                 change_mode();
             }
@@ -443,22 +446,35 @@ int main(void){
   Switch_Init();            // Initialise switches
   SysTick_Init();           // Initialise SysTick timer
   Port1_Init();             // Initialise P1.1 and P1.4 built-in buttons
+  Port2_Init();             // Initialise P2.2-P2.0 built-in LEDs
   while(!SW2IN && !SW1IN){            // Wait for SW2 switch
       SysTick_Wait10ms(10); // Wait here for every 100ms
       REDLED = !REDLED;     // The red LED is blinking waiting for command
   }
   if SW1IN{
+      Port2_Output(SKYBLUE);
       mode=1;
   }
   if SW2IN{
       mode=2;
+      Port2_Output(PINK);
   }
+
   REDLED = 0;               // Turn off the red LED
   BumpEdgeTrigger_Init();   // Initialise bump switches using edge interrupt
-  Port2_Init();             // Initialise P2.2-P2.0 built-in LEDs
+  while(!SW2IN && !SW1IN){            // Wait for SW2 switch
+      SysTick_Wait10ms(10); // Wait here for every 100ms
+      REDLED = !REDLED;     // The red LED is blinking waiting for command
+  }
+  if SW1IN{
+      int_pol=1;
+  }
+  if SW2IN{
+      int_pol=2;
+  }
   Port2_Output(WHITE);      // White is the colour to represent moving forward
   Motor_InitSimple();       // Initialise DC Motor
-  Motor_StopSimple(100);    // Stop the motor on initial state
+  Motor_StopSimple(10);    // Stop the motor on initial state
   EnableInterrupts();
   interrupts();
 }
