@@ -34,10 +34,10 @@ policies, either expressed or implied, of the FreeBSD Project.
 
 // Check these if you really need to include these libraries in your code
 
-#include "E://School/robo1/part1_group13/inc/Clock.h"
-#include "E://School/robo1/part1_group13/inc/SysTick.h"
-#include "E://School/robo1/part1_group13/inc/CortexM.h"
-#include "E://School/robo1/part1_group13/inc/motor.h"
+#include "C://Users/fx19583/robo1/part1_group13/inc/Clock.h"
+#include "C://Users/fx19583/robo1/part1_group13/inc/SysTick.h"
+#include "C://Users/fx19583/robo1/part1_group13/inc/CortexM.h"
+#include "C://Users/fx19583/robo1/part1_group13/inc/motor.h"
 
 
 // Color    LED(s) Port2
@@ -104,6 +104,7 @@ void turn_direction(int direction, int time){
         Motor_StopSimple(25);    // Stop the motor on initial state
         Port2_Output(YELLOW);
         Motor_LeftSimple(5000,time);
+        Port2_Output(RED);
         Motor_StopSimple(25);
     }
     if (direction==2){
@@ -111,8 +112,9 @@ void turn_direction(int direction, int time){
         Motor_BackwardSimple(5000,20);
         Port2_Output(RED);
         Motor_StopSimple(25);    // Stop the motor on initial state
-        Port2_Output(YELLOW);
+        Port2_Output(BLUE);
         Motor_RightSimple(5000,time);
+        Port2_Output(RED);
         Motor_StopSimple(25);
     }
 }
@@ -136,6 +138,7 @@ void PORT4_IRQHandler(void){
           Port2_Output(RED);
           P2->DIR &= ~0xC0;
           P2->OUT &= ~0xC0;
+          SysTick_Wait10ms(100);
       }
 
       if (mode==3){
@@ -249,27 +252,27 @@ void auto_checkbumpswitch(uint8_t status){
 
 void free_checkbumpswitch(uint8_t status){
     switch(status){
-      case 0x02:
+      case 0x6D:
           turn_direction(2,10);
         break;
 
-      case 0x06: // Bump switch 2
+      case 0xAD: // Bump switch 2
           turn_direction(2,15);
           break;
 
-      case 0x08: // Bump switch 3
+      case 0xCD: // Bump switch 3
           turn_direction(2,20);
           break;
 
-      case 0x0C: // Bump switch 4
+      case 0xE5: // Bump switch 4
           turn_direction(1,20);
         break;
 
-      case 0x0E: // Bump switch 5
+      case 0xE9: // Bump switch 5
           turn_direction(1,15);
         break;
 
-      case 0x10: // Bump switch 6
+      case 0xEC: // Bump switch 6
           turn_direction(1,10);
         break;
 
@@ -321,6 +324,7 @@ void Switch_Init(void){
 
 
 void auto_polling(void){
+    Port2_Output(WHITE);
     while(1){
         status = Bump_Read_Input();
         if (status == 0x6D || status == 0xAD || status == 0xCD || status == 0xE5 || status == 0xE9 || status == 0xEC) {
@@ -342,7 +346,7 @@ void free_polling(void){
             free_checkbumpswitch(status);
         }
         Port2_Output(WHITE);
-        Motor_ForwardSimple(5000,100);
+        Motor_ForwardSimple(5000,50);
     }
 }
 
@@ -363,7 +367,7 @@ void auto_interrupt(void){
 void free_interrupt(void){
     Port2_Output(WHITE);
     while(1){
-        Motor_ForwardSimple(5000,100);      // Moving in straight line.
+        Motor_ForwardSimple(5000,50);      // Moving in straight line.
     }
 }
 
@@ -377,7 +381,7 @@ void mode_selection(void){
     REDLED = 0;
     if SW1IN{
         Port2_Output(SKYBLUE);          // Sky Blue color indicates auto mode is selected
-        SysTick_Wait10ms(1000);
+        SysTick_Wait10ms(100);
         while(!SW2IN && !SW1IN){        // Red LED blinking waiting for switches to be pressed for the second time
             SysTick_Wait10ms(10);
             REDLED = !REDLED;
@@ -385,15 +389,15 @@ void mode_selection(void){
         if SW1IN{
             mode=1;                     // Auto mode using interrupt
         }
-        if SW2IN{
+        else if SW2IN{
             mode=2;                     // Auto mode using polling
         }
         REDLED = 0;
         Port2_Output(0);
     }
-    if SW2IN{
+    else if SW2IN{
         Port2_Output(PINK);             // Pink color indicates free motion mode is selected
-        SysTick_Wait10ms(1000);
+        SysTick_Wait10ms(100);
         while(!SW2IN && !SW1IN){        // Red LED blinking waiting for switches to be pressed for the second time.
             SysTick_Wait10ms(10);
             REDLED = !REDLED;
@@ -401,7 +405,7 @@ void mode_selection(void){
         if SW1IN{
             mode=3;                     // Free motion mode using interrupt
         }
-        if SW2IN{
+        else if SW2IN{
             mode=4;                     // Free motion mode using polling
         }
         REDLED = 0;
@@ -431,14 +435,14 @@ void entering_mode(void){
 
 
 //void restart(void){
-//    Clock_Init48MHz();        // Initialize clock with 48MHz frequency
-//    Switch_Init();            // Initialize switches
-//    SysTick_Init();           // Initialize SysTick timer
-//    Port1_Init();             // Initialize P1.1 and P1.4 built-in buttons
-//    Port2_Init();             // Initialize P2.2-P2.0 built-in LEDs
-//    BumpEdgeTrigger_Init();   // Initialize bump switches using edge interrupt
+//    Clock_Init48MHz();        // Initialise clock with 48MHz frequency
+//    Switch_Init();            // Initialise switches
+//    SysTick_Init();           // Initialise SysTick timer
+//    Port1_Init();             // Initialise P1.1 and P1.4 built-in buttons
+//    Port2_Init();             // Initialise P2.2-P2.0 built-in LEDs
+//    BumpEdgeTrigger_Init();   // Initialise bump switches using edge interrupt
 //    mode_selection();         // Selecting mode (mode 1 is auto+interrupt, mode 2 is auto+polling, mode 3 is free+interrupt, mode 4 is free+polling)
-//    Motor_InitSimple();       // Initialize DC Motor
+//    Motor_InitSimple();       // Initialise DC Motor
 //    Motor_StopSimple(10);     // Stop the motor on initial state
 //    EnableInterrupts();       // Turn on interrupt
 //    entering_mode();          // Entering the selected mode
@@ -447,15 +451,15 @@ void entering_mode(void){
 
 
 int main(void){
-  Clock_Init48MHz();        // Initialize clock with 48MHz frequency
-  Switch_Init();            // Initialize switches
-  SysTick_Init();           // Initialize SysTick timer
-  Port1_Init();             // Initialize P1.1 and P1.4 built-in buttons
-  Port2_Init();             // Initialize P2.2-P2.0 built-in LEDs
-  BumpEdgeTrigger_Init();   // Initialize bump switches using edge interrupt
+  Clock_Init48MHz();        // Initialise clock with 48MHz frequency
+  Switch_Init();            // Initialise switches
+  SysTick_Init();           // Initialise SysTick timer
+  Port1_Init();             // Initialise P1.1 and P1.4 built-in buttons
+  Port2_Init();             // Initialise P2.2-P2.0 built-in LEDs
+  BumpEdgeTrigger_Init();   // Initialise bump switches using edge interrupt
   mode_selection();         // Selecting mode (mode 1 = auto+interrupt, mode 2 = auto+polling, mode 3 = free+interrupt, mode 4 = free+polling)
-  Motor_InitSimple();       // Initialize DC Motor
-  Motor_StopSimple(10);     // Stop the motor on initial state
+  Motor_InitSimple();       // Initialise DC Motor
+//  Motor_StopSimple(10);     // Stop the motor on initial state
   EnableInterrupts();       // Turn on interrupt
   entering_mode();          // Entering the selected mode
 }
