@@ -97,23 +97,23 @@ void Port2_Output(uint8_t data){
 
 
 void turn_direction(int direction, int time){
-    if (direction==1){
-        Port2_Output(GREEN);
+    if (direction==1){                      // direction 1 means turning left
+        Port2_Output(GREEN);                // LED green means moving backward
         Motor_BackwardSimple(5000,20);
-        Port2_Output(RED);
-        Motor_StopSimple(25);    // Stop the motor on initial state
-        Port2_Output(YELLOW);
-        Motor_LeftSimple(5000,time);
+        Port2_Output(RED);                  // LED red means motor stops
+        Motor_StopSimple(25);
+        Port2_Output(YELLOW);               // LED yellow means turning left
+        Motor_LeftSimple(5000,time);        // turns left using "time" passed by function
         Port2_Output(RED);
         Motor_StopSimple(25);
     }
-    if (direction==2){
-        Port2_Output(GREEN);
+    if (direction==2){                      // direction 2 means turning right
+        Port2_Output(GREEN);                // LED green means moving backward
         Motor_BackwardSimple(5000,20);
-        Port2_Output(RED);
-        Motor_StopSimple(25);    // Stop the motor on initial state
-        Port2_Output(BLUE);
-        Motor_RightSimple(5000,time);
+        Port2_Output(RED);                  // LED red means motor stops
+        Motor_StopSimple(25);
+        Port2_Output(BLUE);                 // LED blue means turning right
+        Motor_RightSimple(5000,time);       // turns right using "time" passed by function
         Port2_Output(RED);
         Motor_StopSimple(25);
     }
@@ -132,37 +132,40 @@ void PORT4_IRQHandler(void){
     // YELLOW:  Turn left
     // GREEN:   Backward
 
-      status = P4->IV;      // 2*(n+1) where n is highest priority
-      __no_operation();
+      status = P4->IV;                   // 2*(n+1) where n is highest priority
+
+//      __no_operation();
+
       if (mode==1){
-          Port2_Output(RED);
-          Motor_StopSimple(100000);
+          Port2_Output(RED);             // if mode 1 (auto interrupt), stops immediately
+          Motor_StopSimple(100000);      // we've thought of using the SLEEP feature which is port P3.7 and P3.6 to turn off the motor
+                                         // but we didn't find out how to intialise Port 3.
       }
 
-      if (mode==3){
+      if (mode==3){                            // if mode 3(free motion interrupt), the robot turns accordingly
           switch(status){
             case 0x02:
-                turn_direction(1,10);
+                turn_direction(1,10);          // turn left for 10 ms
               break;
 
             case 0x06: // Bump switch 2
-                turn_direction(1,15);
+                turn_direction(1,15);          // turn left for 15 ms
                 break;
 
             case 0x08: // Bump switch 3
-                turn_direction(1,20);
+                turn_direction(1,20);          // turn left for 20 ms
                 break;
 
             case 0x0C: // Bump switch 4
-                turn_direction(2,20);
+                turn_direction(2,20);          // turn right for 20 ms
               break;
 
             case 0x0E: // Bump switch 5
-                turn_direction(2,15);
+                turn_direction(2,15);          // turn right for 15 ms
               break;
 
             case 0x10: // Bump switch 6
-                turn_direction(2,10);
+                turn_direction(2,10);          // turn right for 10 ms
               break;
 
             case 0xED: // none of the switches are pressed
@@ -198,7 +201,7 @@ uint8_t Bump_Read_Input(void){
 //              2) the input mask in switch case (for polling method) is DIFFERENT from the 
 //                 Nested Vectored Interrupt Controller (NVIC) which used in interrupt method.
 void auto_checkbumpswitch(uint8_t status){
-    switch(status){
+    switch(status){                                             // stops immediately
       //case 0x02: // Bump switch 1 (for interrupt vector)
         case 0x6D: // Bump 1
             Port2_Output(RED);
@@ -251,27 +254,27 @@ void auto_checkbumpswitch(uint8_t status){
 void free_checkbumpswitch(uint8_t status){
     switch(status){
       case 0x6D:
-          turn_direction(2,10);
+          turn_direction(2,10);                 // turn right for 10 ms
         break;
 
       case 0xAD: // Bump switch 2
-          turn_direction(2,15);
+          turn_direction(2,15);                 // turn right for 15 ms
           break;
 
       case 0xCD: // Bump switch 3
-          turn_direction(2,20);
+          turn_direction(2,20);                 // turn right for 20 ms
           break;
 
       case 0xE5: // Bump switch 4
-          turn_direction(1,20);
+          turn_direction(1,20);                 // turn left for 20 ms
         break;
 
       case 0xE9: // Bump switch 5
-          turn_direction(1,15);
+          turn_direction(1,15);                 // turn left for 15 ms
         break;
 
       case 0xEC: // Bump switch 6
-          turn_direction(1,10);
+          turn_direction(1,10);                 // turn left for 10 ms
         break;
 
       case 0xED: // none of the switches are pressed
@@ -320,6 +323,12 @@ void Switch_Init(void){
 
 
 
+// This function runs auto mode's polling method
+// The function has an infinite while loop that is executing the code sequentially
+// Because the interrupt is disable by DisableInterrupt() in the function entering_mode(), robot will not stop immediately when a switch is pressed.
+// It runs the code one by one, first it checks for bump, then moves in the predefined route
+// If bump switch is pressed when executing the predefined loop, the robot will not stop immediately
+// The robot will only stop when the execution of predefined loop is finished meanwhile one of the bump switch is still pressed down.
 void auto_polling(void){
     Port2_Output(WHITE);
     while(1){
@@ -336,6 +345,12 @@ void auto_polling(void){
 
 
 
+// This function runs free motion mode's polling method
+// The function has an infinite while loop that is executing the code sequentially
+// Because the interrupt is disable by DisableInterrupt() in the function entering_mode(), robot will not turn immediately when a switch is pressed.
+// It runs the code one by one, first it checks for bump, then moves in a straight line
+// If bump switch is pressed when executing the predefined loop, the robot will not turn direction immediately
+// The robot will only turn when the execution of Motor_ForwardSimple() is finished meanwhile one of the bump switch is still pressed down.
 void free_polling(void){
     while(1){
         status = Bump_Read_Input();
@@ -349,6 +364,9 @@ void free_polling(void){
 
 
 
+// This function runs auto mode's interrupt method
+// The function has an infinite while loop that lets the robot walk in the predefined route.
+// Because interrupt is enabled by EnableInterrupt(), whenever a bump switch is pressed, the robot stops immediately.
 void auto_interrupt(void){
     Port2_Output(WHITE);
     while(1){
@@ -361,6 +379,9 @@ void auto_interrupt(void){
 
 
 
+// This function runs free motion mode's interrupt method
+// The function has an infinite while loop that lets the robot walk in a straight line
+// Because interrupt is enabled by EnableInterrupt(), whenever a bump switch is pressed, the robot turns direction immediately.
 void free_interrupt(void){
     Port2_Output(WHITE);
     while(1){
@@ -370,15 +391,25 @@ void free_interrupt(void){
 
 
 
+// This function allows the user to select mode between:
+//      mode 1: auto mode with interrupt
+//      mode 2: auto mode with polling
+//      mode 3: free motion mode with interrupt
+//      mode 4: free motion mode with polling
 void mode_selection(void){
+
+    // The REDLED blinks telling the user it's waiting for a switch to be pressed.
+    // Whenever user press switch 1 or switch 2, it exits the first while loop.
     while(!SW2IN && !SW1IN){            // Red LED blinking waiting for switches to be pressed
         SysTick_Wait10ms(10);
         REDLED = !REDLED;
     }
     REDLED = 0;
+
+    // if switch 1 is pressed then SKYBLUE colored LED is turned on showing that auto mode is selected
     if SW1IN{
         Port2_Output(SKYBLUE);          // Sky Blue color indicates auto mode is selected
-        SysTick_Wait10ms(100);
+        SysTick_Wait10ms(100);          // Wait for some time to prevent the user pressing to quickly
         while(!SW2IN && !SW1IN){        // Red LED blinking waiting for switches to be pressed for the second time
             SysTick_Wait10ms(10);
             REDLED = !REDLED;
@@ -392,9 +423,10 @@ void mode_selection(void){
         REDLED = 0;
         Port2_Output(0);
     }
+    // if switch21 is pressed then PINK colored LED is turned on showing that free motion mode is selected
     else if SW2IN{
         Port2_Output(PINK);             // Pink color indicates free motion mode is selected
-        SysTick_Wait10ms(100);
+        SysTick_Wait10ms(100);          // Wait for some time to prevent the user pressing to quickly
         while(!SW2IN && !SW1IN){        // Red LED blinking waiting for switches to be pressed for the second time.
             SysTick_Wait10ms(10);
             REDLED = !REDLED;
@@ -412,6 +444,7 @@ void mode_selection(void){
 
 
 
+// This function helps the program to enter the function corresponding to the user's mode selection.
 void entering_mode(void){
     if (mode==1){
         auto_interrupt();
@@ -442,5 +475,5 @@ int main(void){
   Motor_StopSimple(10);     // Stop the motor on initial state
   mode_selection();         // Selecting mode (mode 1 = auto+interrupt, mode 2 = auto+polling, mode 3 = free+interrupt, mode 4 = free+polling)
   EnableInterrupts();       // Turn on interrupt
-  entering_mode();          // Entering the selected mode
+  entering_mode();          // Entering the mode selected by the user
 }
