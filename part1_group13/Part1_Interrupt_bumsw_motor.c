@@ -133,12 +133,10 @@ void PORT4_IRQHandler(void){
     // GREEN:   Backward
 
       status = P4->IV;      // 2*(n+1) where n is highest priority
-
+      __no_operation();
       if (mode==1){
           Port2_Output(RED);
-          P2->DIR &= ~0xC0;
-          P2->OUT &= ~0xC0;
-          SysTick_Wait10ms(100);
+          Motor_StopSimple(100000);
       }
 
       if (mode==3){
@@ -204,42 +202,42 @@ void auto_checkbumpswitch(uint8_t status){
       //case 0x02: // Bump switch 1 (for interrupt vector)
         case 0x6D: // Bump 1
             Port2_Output(RED);
-            P2->DIR &= ~0xC0;
-            P2->OUT &= ~0xC0;
+            Motor_StopSimple(100000);
+
         break;
       //case 0x06: // Bump switch 2 (for interrupt vector)
         case 0xAD: // Bump 2
             Port2_Output(RED);
-            P2->DIR &= ~0xC0;
-            P2->OUT &= ~0xC0;
+            Motor_StopSimple(100000);
+
 
         break;
       //case 0x08: // Bump switch 3 (for interrupt vector)
         case 0xCD: // Bump 3
             Port2_Output(RED);
-            P2->DIR &= ~0xC0;
-            P2->OUT &= ~0xC0;
+            Motor_StopSimple(100000);
+
 
         break;
       //case 0x0C: // Bump switch 4 (for interrupt vector)
         case 0xE5: // Bump 4
             Port2_Output(RED);
-            P2->DIR &= ~0xC0;
-            P2->OUT &= ~0xC0;
+            Motor_StopSimple(100000);
+
 
         break;
       //case 0x0E: // Bump switch 5 (for interrupt vector)
         case 0xE9: // Bump 5
             Port2_Output(RED);
-            P2->DIR &= ~0xC0;
-            P2->OUT &= ~0xC0;
+            Motor_StopSimple(100000);
+
 
         break;
       //case 0x10: // Bump switch 6 (for interrupt vector)
         case 0xEC: // Bump 6
             Port2_Output(RED);
-            P2->DIR &= ~0xC0;
-            P2->OUT &= ~0xC0;
+            Motor_StopSimple(100000);
+
 
         break;
       case 0xED: // neither switch pressed
@@ -281,7 +279,6 @@ void free_checkbumpswitch(uint8_t status){
     }
     Port2_Output(WHITE);
 }
-
 
 
 
@@ -457,9 +454,9 @@ int main(void){
   Port1_Init();             // Initialise P1.1 and P1.4 built-in buttons
   Port2_Init();             // Initialise P2.2-P2.0 built-in LEDs
   BumpEdgeTrigger_Init();   // Initialise bump switches using edge interrupt
-  mode_selection();         // Selecting mode (mode 1 = auto+interrupt, mode 2 = auto+polling, mode 3 = free+interrupt, mode 4 = free+polling)
   Motor_InitSimple();       // Initialise DC Motor
-//  Motor_StopSimple(10);     // Stop the motor on initial state
+  Motor_StopSimple(10);     // Stop the motor on initial state
+  mode_selection();         // Selecting mode (mode 1 = auto+interrupt, mode 2 = auto+polling, mode 3 = free+interrupt, mode 4 = free+polling)
   EnableInterrupts();       // Turn on interrupt
   entering_mode();          // Entering the selected mode
 }
