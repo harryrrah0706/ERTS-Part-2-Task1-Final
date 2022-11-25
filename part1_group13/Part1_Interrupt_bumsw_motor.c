@@ -431,22 +431,6 @@ void entering_mode(void){
 
 
 
-//void restart(void){
-//    Clock_Init48MHz();        // Initialise clock with 48MHz frequency
-//    Switch_Init();            // Initialise switches
-//    SysTick_Init();           // Initialise SysTick timer
-//    Port1_Init();             // Initialise P1.1 and P1.4 built-in buttons
-//    Port2_Init();             // Initialise P2.2-P2.0 built-in LEDs
-//    BumpEdgeTrigger_Init();   // Initialise bump switches using edge interrupt
-//    mode_selection();         // Selecting mode (mode 1 is auto+interrupt, mode 2 is auto+polling, mode 3 is free+interrupt, mode 4 is free+polling)
-//    Motor_InitSimple();       // Initialise DC Motor
-//    Motor_StopSimple(10);     // Stop the motor on initial state
-//    EnableInterrupts();       // Turn on interrupt
-//    entering_mode();          // Entering the selected mode
-//}
-
-
-
 int main(void){
   Clock_Init48MHz();        // Initialise clock with 48MHz frequency
   Switch_Init();            // Initialise switches
